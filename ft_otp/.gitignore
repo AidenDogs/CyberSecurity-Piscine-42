@@ -1,0 +1,14 @@
+#VS CODE JSON FILES
+.vscode
+
+#.KEY AND WORK FILES
+*.key
+*.txt
+
+#.ENV
+.env
+
+#EXECUTABLE
+ft_otp
+
+
