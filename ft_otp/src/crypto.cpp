@@ -1,4 +1,4 @@
-#include "include/crypto.hpp"
+#include "../include/crypto.hpp"
 
 std::array<uint8_t, AES_KEY_LEN> deriveAesKey(const std::string& secret, const std::array<uint8_t, SALT_LEN>& salt)
 {

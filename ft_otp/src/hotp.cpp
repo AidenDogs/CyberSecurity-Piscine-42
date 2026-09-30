@@ -1,6 +1,6 @@
-#include "include/hotp.hpp"
+#include "../include/hotp.hpp"
 
-static uint64_t getTotpTimeStep(uint64_t period = 1)
+static uint64_t getTotpTimeStep(uint64_t period = 30)
 {
 	uint64_t now = static_cast<uint64_t>(std::time(nullptr));
 	return now / period;

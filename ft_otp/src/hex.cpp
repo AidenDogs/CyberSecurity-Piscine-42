@@ -1,4 +1,4 @@
-#include "include/hex.hpp"
+#include "../include/hex.hpp"
 
 static uint8_t hexCharToByte(char c)
 {

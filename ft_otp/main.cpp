@@ -11,6 +11,12 @@ static void	exeProgram(char **argv)
 	std::string flag = argv[1];
 	if (flag == "-g")
 	{
+		if (!argv[2])
+		{
+			std::cerr << "-g requires a file" << std::endl;
+			exit(1);
+		}
+		
 		std::ifstream inFile;
 
 		inFile.open(argv[2]);
@@ -23,7 +29,14 @@ static void	exeProgram(char **argv)
 		inFile.close();
 	}
 	else if (flag == "-k")
+	{
+		if (!argv[2])
+		{
+			std::cerr << "-k requires a key" << std::endl;
+			exit(1);
+		}		
 		generateOTP(argv[2]);
+	}
 	else
 		generateSeed();
 }

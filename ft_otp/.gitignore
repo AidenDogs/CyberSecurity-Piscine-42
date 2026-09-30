@@ -4,6 +4,8 @@
 #.KEY AND WORK FILES
 *.key
 *.txt
+node_modules
+.next
 
 #.ENV
 .env

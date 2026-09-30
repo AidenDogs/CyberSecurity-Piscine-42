@@ -1,4 +1,4 @@
-#include "key.hpp"
+#include "../include/key.hpp"
 
 static std::string isValidKey(std::ifstream& inFile)
 {
@@ -14,7 +14,7 @@ static std::string isValidKey(std::ifstream& inFile)
 	{
 		if (!std::isxdigit(static_cast<unsigned char>(c)))
 		{
-			std::cerr << "Invalid key: contains non-hexadecimal characters\nAborting" << "MHANZ{} " << c << std::endl;
+			std::cerr << "Invalid key: contains non-hexadecimal characters\nAborting" << std::endl;
 			inFile.close();
 			exit(1);
 		}

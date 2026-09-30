@@ -1,4 +1,4 @@
-#include "include/seed.hpp"
+#include "../include/seed.hpp"
 
 void generateSeed()
 {
