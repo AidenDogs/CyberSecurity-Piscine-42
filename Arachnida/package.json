@@ -1,0 +1,19 @@
+{
+  "name": "arachnida",
+  "private": true,
+  "type" : "module",
+  "scripts": {
+    "spider": "tsx Spider/main.ts",
+    "scorpion": "tsx Scorpion/index.ts",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "exif-reader": "^2.0.3",
+    "sharp": "^0.35.5"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.3",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}

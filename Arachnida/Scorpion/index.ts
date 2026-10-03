@@ -7,8 +7,6 @@ const args = process.argv.slice(2)
 async function extractMetadata(imageFileName: string)
 {
 	const filename = path.basename(imageFileName)
-	console.log(`=== ${filename} ===\n`)
-
 	try
 	{
 		const metaData = await sharp(imageFileName).metadata()
@@ -23,6 +21,7 @@ async function extractMetadata(imageFileName: string)
 			...metaData,
 			exif
 		}
+		console.log(`=== ${filename} ===`)
 		console.dir(result), {depth: null}
 
 		return result
