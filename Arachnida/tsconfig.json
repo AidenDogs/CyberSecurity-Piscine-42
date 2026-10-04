@@ -9,7 +9,7 @@
     "types": ["node"]
   },
   "include": [
-    "Scorpion/index.ts",
+    "Scorpion/**/*.ts",
     "Spider/**/*.ts"
   ]
 }
