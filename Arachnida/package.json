@@ -3,8 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "spider": "tsx Spider/main.ts",
-    "scorpion": "tsx Scorpion/index.ts",
+    "spider": "tsx Spider/main",
+    "scorpion": "tsx Scorpion/cli/main",
+    "scorpion-web": "tsx Scorpion/web/src/server",
     "check": "tsc --noEmit"
   },
   "dependencies": {

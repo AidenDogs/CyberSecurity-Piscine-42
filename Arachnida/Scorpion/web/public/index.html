@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+	<meta charset="UTF-8">
+	<meta
+		name="viewport"
+		content="width=device-width, initial-scale=1.0"
+	>
+
+	<title>Scorpion EXIF</title>
+
+	<link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+	<main class="container">
+		<header>
+			<h1>🦂 Scorpion</h1>
+
+			<p>
+				Visualizzatore EXIF e metadata
+			</p>
+		</header>
+
+		<section
+			id="dropzone"
+			class="dropzone"
+			tabindex="0"
+		>
+			<input
+				id="file-input"
+				type="file"
+				accept="image/*"
+				hidden
+			>
+
+			<div class="dropzone-content">
+				<div class="icon">📷</div>
+
+				<h2>
+					Trascina qui un'immagine
+				</h2>
+
+				<p>
+					oppure
+				</p>
+
+				<button
+					id="select-button"
+					type="button"
+				>
+					Seleziona immagine
+				</button>
+
+				<span
+					id="file-name"
+					class="file-name hidden"
+				></span>
+			</div>
+		</section>
+
+		<section
+			id="loading"
+			class="status loading hidden"
+		>
+			Analisi dell'immagine...
+		</section>
+
+		<section
+			id="error"
+			class="status error hidden"
+		></section>
+
+		<section
+			id="result"
+			class="result hidden"
+		>
+			<div class="preview-section">
+				<div class="preview-image-container">
+					<img
+						id="image-preview"
+						alt="Anteprima immagine"
+					>
+				</div>
+
+				<div class="preview-info">
+					<h2 id="preview-filename"></h2>
+
+					<span id="preview-size"></span>
+				</div>
+			</div>
+
+			<div class="result-header">
+				<div>
+					<h2>Metadata</h2>
+
+					<span
+						id="metadata-count"
+						class="metadata-count"
+					>
+						0 tag
+					</span>
+				</div>
+
+				<input
+					id="search-input"
+					type="search"
+					placeholder="Cerca..."
+				>
+			</div>
+
+			<div class="table-wrapper">
+				<table>
+					<thead>
+						<tr>
+							<th>Tag</th>
+							<th>Valore</th>
+						</tr>
+					</thead>
+
+					<tbody id="metadata-body"></tbody>
+				</table>
+			</div>
+
+			<details class="raw">
+				<summary>
+					<div class="raw-header">
+						<span>JSON metadata</span>
+
+						<button
+							id="copy-json"
+							type="button"
+							class="copy-button"
+						>
+							Copia JSON
+						</button>
+					</div>
+				</summary>
+
+				<pre id="raw-output"></pre>
+			</details>
+		</section>
+	</main>
+
+	<script src="/app.js" defer></script>
+</body>
+</html>
