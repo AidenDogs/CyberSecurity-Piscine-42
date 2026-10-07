@@ -1,0 +1,15 @@
+services:
+  tor-nginx:
+    build: .
+    container_name: tor-nginx
+
+    ports:
+      - "127.0.0.1:4242:4242"
+
+    volumes:
+      - tor-data:/var/lib/tor/hidden_service
+
+    restart: unless-stopped
+
+volumes:
+  tor-data:

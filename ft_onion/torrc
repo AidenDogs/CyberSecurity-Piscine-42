@@ -1,4 +1,5 @@
+User debian-tor
+DataDirectory /var/lib/tor
+
 HiddenServiceDir /var/lib/tor/hidden_service/
 HiddenServicePort 80 127.0.0.1:80
-
-2xdlegzgvk555x2adyddge7vxphxsqpqkuvimahxbf7zlhknuxgcugid.onion
