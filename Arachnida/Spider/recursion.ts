@@ -138,21 +138,21 @@ async function downloadImage(imageUrl: string, webCrawler: webCrawler ): Promise
 	}
 }
 
-export async function recursiveImages(url: URL, webCrawler: webCrawler): Promise<void>
+export async function recursiveImages(url: URL, webCrawler: webCrawler, depth: number = webCrawler.depth): Promise<void>
 {
-	if (webCrawler.depth < 0 || visitedUrls.has(url.href))
+	if (depth < 0 || visitedUrls.has(url.href))
 		return
 
 	visitedUrls.add(url.href)
 
-	console.log(`Crawling: ${url.href} (depth: ${webCrawler.depth})`)
+	console.log(`Crawling: ${url.href} (depth: ${depth})`)
 
 	const images = isValidImage(await getImages(url))
 
 	for (const image of images)
 		await downloadImage(image, webCrawler)
 
-	if (!webCrawler.isRecursive || webCrawler.depth === 0)
+	if (!webCrawler.isRecursive || depth === 0)
 		return
 
 	const links = await getLinks(url)
@@ -162,7 +162,6 @@ export async function recursiveImages(url: URL, webCrawler: webCrawler): Promise
 		const nextUrl = new URL(link)
 		if (nextUrl.hostname !== webCrawler.url.hostname)
 			continue
-		webCrawler.depth--
-		await recursiveImages(nextUrl, webCrawler)
+		await recursiveImages(nextUrl, webCrawler, depth - 1)
 	}
 }

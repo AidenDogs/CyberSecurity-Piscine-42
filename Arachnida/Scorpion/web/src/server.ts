@@ -178,27 +178,35 @@ async function serveStatic(request: import("http").IncomingMessage, response: im
 
 const server = createServer(async (request, response) =>
 {
-	const method = request.method ?? "GET"
-
-	const url = new URL(request.url ?? "/", "http://localhost")
-
-	if (method === "POST" && url.pathname === "/api/exif")
+	try
 	{
-		await handleExif(request, response)
-		return
-	}
+		const method = request.method ?? "GET"
+		const url = new URL(request.url ?? "/", "http://localhost")
 
-	if (method === "GET")
+		if (method === "POST" && url.pathname === "/api/exif")
+		{
+			await handleExif(request, response)
+			return
+		}
+
+		if (method === "GET")
+		{
+			await serveStatic(request, response)
+			return
+		}
+
+		response.writeHead(405, { Allow: "GET, POST" })
+		response.end("Method Not Allowed")
+	}
+	catch (error)
 	{
-		await serveStatic(request, response)
-		return
+		console.error(error)
+
+		if (!response.headersSent)
+			response.writeHead(400, { "Content-Type": "text/plain; charset=utf-8" })
+
+		response.end("Bad request")
 	}
-
-	response.writeHead(405, {
-		Allow: "GET, POST"
-	})
-
-	response.end("Method Not Allowed")
 })
 
 server.listen(PORT, "127.0.0.1", () =>

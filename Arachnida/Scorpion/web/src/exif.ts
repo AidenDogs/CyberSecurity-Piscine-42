@@ -1,12 +1,12 @@
 import { tmpdir } from "os"
-import { join } from "path"
+import { basename, join } from "path"
 import { exiftool } from "exiftool-vendored"
 import { mkdtemp, writeFile, rm } from "fs/promises"
 
 export async function extractExif(image: Buffer, filename: string): Promise<unknown>
 {
 	const tempDir = await mkdtemp(join(tmpdir(), "scorpion-"))
-	const tempFile = join(tempDir, filename)
+	const tempFile = join(tempDir, basename(filename) || "image")
 
 	try
 	{
@@ -16,6 +16,6 @@ export async function extractExif(image: Buffer, filename: string): Promise<unkn
 	}
 	finally
 	{
-		await rm(tempDir, {recursive: true, force: true})
+		await rm(tempDir, { recursive: true, force: true })
 	}
 }
