@@ -2,14 +2,14 @@ services:
   tor-nginx:
     build: .
     container_name: tor-nginx
-
     ports:
       - "127.0.0.1:4242:4242"
-
     volumes:
       - tor-data:/var/lib/tor/hidden_service
-
+      - ssh-hostkeys:/etc/ssh/hostkeys
+      - ./ssh-keys:/keys:ro
     restart: unless-stopped
 
 volumes:
   tor-data:
+  ssh-hostkeys:

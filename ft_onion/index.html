@@ -1,30 +1,28 @@
-<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Onion // Private Node</title>
+<script>document.documentElement.classList.add('js');</script>
 
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
-
     :root {
         --bg: #07080c;
         --panel: #0d1017;
         --panel-2: #11151e;
         --text: #e7e9ee;
-        --muted: #777e8d;
+        --muted: #8a91a0;
         --purple: #9b5cff;
         --purple-dark: #6d35bd;
         --green: #55e6a5;
+        --amber: #ffbd2e;
         --border: rgba(155, 92, 255, .18);
+        --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
     }
 
-    * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-    }
-
-    html {
-        scroll-behavior: smooth;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
 
     body {
         min-height: 100vh;
@@ -33,7 +31,7 @@
             radial-gradient(circle at 0% 100%, rgba(85, 230, 165, .05), transparent 30%),
             var(--bg);
         color: var(--text);
-        font-family: "JetBrains Mono", monospace;
+        font-family: var(--mono);
         line-height: 1.6;
     }
 
@@ -49,6 +47,19 @@
         background-size: 40px 40px;
     }
 
+    #net {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    nav, main, footer { position: relative; z-index: 1; }
+
+    :focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+
     nav {
         position: sticky;
         top: 0;
@@ -62,38 +73,16 @@
         border-bottom: 1px solid var(--border);
     }
 
-    .logo {
-        color: var(--text);
-        text-decoration: none;
-        font-weight: 700;
-        letter-spacing: 2px;
-    }
+    .logo { color: var(--text); text-decoration: none; font-weight: 700; letter-spacing: 2px; }
+    .logo span { color: var(--purple); }
 
-    .logo span {
-        color: var(--purple);
-    }
+    nav ul { display: flex; gap: 28px; list-style: none; }
+    nav a { color: var(--muted); text-decoration: none; font-size: 13px; transition: .2s; }
+    nav a:hover, nav a.active { color: var(--purple); }
 
-    nav ul {
-        display: flex;
-        gap: 28px;
-        list-style: none;
-    }
+    .nav-clock { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
 
-    nav a {
-        color: var(--muted);
-        text-decoration: none;
-        font-size: 13px;
-        transition: .2s;
-    }
-
-    nav a:hover {
-        color: var(--purple);
-    }
-
-    main {
-        width: min(1100px, 90%);
-        margin: auto;
-    }
+    main { width: min(1100px, 90%); margin: auto; }
 
     .hero {
         min-height: 80vh;
@@ -114,12 +103,18 @@
         border: 1px solid var(--border);
         border-radius: 50%;
         font-size: 48px;
-        background:
-            radial-gradient(circle, rgba(155,92,255,.18), transparent 65%),
-            var(--panel);
-        box-shadow:
-            0 0 40px rgba(155,92,255,.12),
-            inset 0 0 30px rgba(155,92,255,.08);
+        background: radial-gradient(circle, rgba(155,92,255,.18), transparent 65%), var(--panel);
+        box-shadow: 0 0 40px rgba(155,92,255,.12), inset 0 0 30px rgba(155,92,255,.08);
+        animation: float 6s ease-in-out infinite;
+        cursor: pointer;
+        user-select: none;
+        transition: transform .4s;
+    }
+    .onion.spin { transform: rotate(360deg) scale(1.08); }
+
+    @keyframes float {
+        0%, 100% { translate: 0 0; }
+        50% { translate: 0 -8px; }
     }
 
     .status {
@@ -141,7 +136,10 @@
         border-radius: 50%;
         background: var(--green);
         box-shadow: 0 0 12px var(--green);
+        animation: pulse 2s ease-in-out infinite;
     }
+
+    @keyframes pulse { 50% { opacity: .35; } }
 
     h1 {
         font-size: clamp(42px, 8vw, 82px);
@@ -149,70 +147,47 @@
         letter-spacing: -4px;
         margin-bottom: 25px;
     }
+    h1 span { color: var(--purple); }
 
-    h1 span {
-        color: var(--purple);
-    }
+    .hero p { max-width: 650px; color: var(--muted); font-size: 15px; }
 
-    .hero p {
-        max-width: 650px;
-        color: var(--muted);
-        font-size: 15px;
+    .typed { min-height: 3.2em; }
+    .caret {
+        display: inline-block;
+        width: .6ch;
+        height: 1.1em;
+        margin-left: 2px;
+        vertical-align: text-bottom;
+        background: var(--purple);
+        animation: blink 1s steps(1) infinite;
     }
+    @keyframes blink { 50% { opacity: 0; } }
 
-    .buttons {
-        display: flex;
-        gap: 14px;
-        margin-top: 35px;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
+    .buttons { display: flex; gap: 14px; margin-top: 35px; flex-wrap: wrap; justify-content: center; }
 
     .btn {
         display: inline-block;
         padding: 13px 20px;
         border-radius: 6px;
         border: 1px solid var(--border);
+        background: transparent;
         color: var(--text);
         text-decoration: none;
+        font: inherit;
         font-size: 13px;
+        cursor: pointer;
         transition: .2s;
     }
+    .btn.primary { background: var(--purple); border-color: var(--purple); color: #fff; }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(155,92,255,.15); }
 
-    .btn.primary {
-        background: var(--purple);
-        border-color: var(--purple);
-        color: #fff;
-    }
+    section { padding: 80px 0; }
 
-    .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 30px rgba(155,92,255,.15);
-    }
+    .section-title { margin-bottom: 35px; }
+    .section-title small { color: var(--purple); display: block; margin-bottom: 8px; }
+    .section-title h2 { font-size: 28px; }
 
-    section {
-        padding: 80px 0;
-    }
-
-    .section-title {
-        margin-bottom: 35px;
-    }
-
-    .section-title small {
-        color: var(--purple);
-        display: block;
-        margin-bottom: 8px;
-    }
-
-    .section-title h2 {
-        font-size: 28px;
-    }
-
-    .grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
-    }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 
     .card {
         padding: 25px;
@@ -221,28 +196,45 @@
         border-radius: 10px;
         transition: .25s;
     }
+    .card:hover { transform: translateY(-4px); border-color: rgba(155,92,255,.45); }
 
-    .card:hover {
-        transform: translateY(-4px);
-        border-color: rgba(155,92,255,.45);
+    .card-icon { color: var(--purple); font-size: 22px; margin-bottom: 15px; }
+    .card h3 { font-size: 15px; margin-bottom: 10px; }
+    .card p { color: var(--muted); font-size: 13px; }
+
+    /* scroll reveal (solo se JS attivo) */
+    .js .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s, transform .7s; }
+    .js .reveal.in { opacity: 1; transform: none; }
+
+    /* stats */
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px; }
+    .stat { padding: 18px 20px; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; }
+    .stat small { display: block; color: var(--muted); font-size: 11px; margin-bottom: 4px; }
+    .stat b { font-size: 20px; font-variant-numeric: tabular-nums; color: var(--green); }
+
+    /* circuit */
+    .circuit-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+    .circuit-head p { color: var(--muted); font-size: 12px; max-width: 60ch; }
+    .circuit { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: stretch; }
+    .hop {
+        position: relative;
+        min-width: 130px;
+        flex: 1 1 130px;
+        max-width: 160px;
+        padding: 14px 12px;
+        text-align: center;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        transition: border-color .3s, box-shadow .3s, background .3s;
     }
+    .hop small { display: block; color: var(--muted); font-size: 10px; }
+    .hop b { display: block; font-size: 13px; margin: 2px 0; }
+    .hop span { font-size: 11px; color: var(--purple); }
+    .hop.active { border-color: var(--green); box-shadow: 0 0 24px rgba(85,230,165,.18); background: var(--panel-2); }
+    .hop.active b { color: var(--green); }
 
-    .card-icon {
-        color: var(--purple);
-        font-size: 22px;
-        margin-bottom: 15px;
-    }
-
-    .card h3 {
-        font-size: 15px;
-        margin-bottom: 10px;
-    }
-
-    .card p {
-        color: var(--muted);
-        font-size: 13px;
-    }
-
+    /* terminal */
     .terminal {
         overflow: hidden;
         border: 1px solid var(--border);
@@ -250,47 +242,47 @@
         background: #090b10;
         box-shadow: 0 20px 70px rgba(0,0,0,.35);
     }
+    .terminal-head { display: flex; gap: 7px; padding: 13px 15px; border-bottom: 1px solid #191d27; }
+    .terminal-head i { width: 10px; height: 10px; border-radius: 50%; background: #343946; }
+    .terminal-head i:first-child { background: #ff5f56; }
+    .terminal-head i:nth-child(2) { background: #ffbd2e; }
+    .terminal-head i:nth-child(3) { background: #27c93f; }
 
-    .terminal-head {
-        display: flex;
-        gap: 7px;
-        padding: 13px 15px;
-        border-bottom: 1px solid #191d27;
-    }
-
-    .terminal-head i {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: #343946;
-    }
-
-    .terminal-head i:first-child {
-        background: #ff5f56;
-    }
-
-    .terminal-head i:nth-child(2) {
-        background: #ffbd2e;
-    }
-
-    .terminal-head i:nth-child(3) {
-        background: #27c93f;
-    }
-
-    pre {
-        padding: 25px;
-        overflow-x: auto;
+    #term-out {
+        padding: 22px 25px 6px;
+        height: 280px;
+        overflow-y: auto;
         color: #aeb5c2;
         font-size: 13px;
+        white-space: pre-wrap;
+        word-break: break-word;
     }
+    .term-in { display: flex; gap: 10px; padding: 6px 25px 22px; font-size: 13px; }
+    .term-in label { color: var(--green); white-space: nowrap; }
+    .term-in input {
+        flex: 1;
+        min-width: 0;
+        background: transparent;
+        border: 0;
+        outline: 0;
+        color: var(--text);
+        font: inherit;
+        caret-color: var(--purple);
+    }
+    .term-in input:disabled { opacity: .4; }
 
-    .green {
-        color: var(--green);
-    }
+    .green { color: var(--green); }
+    .purple { color: var(--purple); }
+    .amber { color: var(--amber); }
 
-    .purple {
-        color: var(--purple);
+    .addr {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 4px;
     }
+    .addr code { color: var(--green); word-break: break-all; font-size: 13px; }
 
     footer {
         margin-top: 50px;
@@ -302,35 +294,38 @@
     }
 
     @media (max-width: 750px) {
-        nav ul {
-            display: none;
-        }
+        nav ul { display: none; }
+        .grid { grid-template-columns: 1fr; }
+        .stats { grid-template-columns: repeat(2, 1fr); }
+        h1 { letter-spacing: -2px; }
+    }
 
-        .grid {
-            grid-template-columns: 1fr;
-        }
-
-        h1 {
-            letter-spacing: -2px;
-        }
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+        .js .reveal { opacity: 1; transform: none; }
     }
 </style>
+</head>
+<body>
+<canvas id="net" aria-hidden="true"></canvas>
 
-</head> <body>
 <nav>
     <a href="#" class="logo">[<span>ONION</span>]</a>
 
     <ul>
         <li><a href="#about">ABOUT</a></li>
+        <li><a href="#circuit">CIRCUIT</a></li>
         <li><a href="#status">STATUS</a></li>
         <li><a href="#access">ACCESS</a></li>
     </ul>
+
+    <span class="nav-clock" id="clock">--:--:-- UTC</span>
 </nav>
 
 <main>
 
     <section class="hero">
-        <div class="onion">🧅</div>
+        <div class="onion" id="onion" role="img" aria-label="Onion" title="Click me">🧅</div>
 
         <div class="status">
             <span class="status-dot"></span>
@@ -339,18 +334,15 @@
 
         <h1>Welcome to the <span>Onion.</span></h1>
 
-        <p>
-            A minimal private space built around privacy, anonymity
-            and decentralized communication.
-        </p>
+        <p class="typed"><span id="typed"></span><span class="caret" aria-hidden="true"></span></p>
 
         <div class="buttons">
             <a href="#about" class="btn primary">ENTER SYSTEM</a>
-            <a href="#access" class="btn">VIEW INFO</a>
+            <a href="#status" class="btn">OPEN TERMINAL</a>
         </div>
     </section>
 
-    <section id="about">
+    <section id="about" class="reveal">
         <div class="section-title">
             <small>// SYSTEM</small>
             <h2>Built for privacy.</h2>
@@ -360,59 +352,62 @@
             <article class="card">
                 <div class="card-icon">◈</div>
                 <h3>Privacy First</h3>
-                <p>
-                    A clean interface focused on privacy-conscious
-                    communication and minimal data exposure.
-                </p>
+                <p>A clean interface focused on privacy-conscious communication and minimal data exposure. No trackers, no external requests, no cookies.</p>
             </article>
 
             <article class="card">
                 <div class="card-icon">◎</div>
                 <h3>Decentralized</h3>
-                <p>
-                    Designed around the concept of distributed,
-                    resilient infrastructure.
-                </p>
+                <p>Reachable only through the Tor network: no public IP, no DNS record, no port to scan from the outside.</p>
             </article>
 
             <article class="card">
                 <div class="card-icon">⌁</div>
                 <h3>Anonymous Access</h3>
-                <p>
-                    Compatible with privacy-oriented browsing
-                    environments and workflows.
-                </p>
+                <p>Visitor and server both stay hidden. Neither side learns the other's network location.</p>
             </article>
         </div>
     </section>
 
-    <section id="status">
+    <section id="circuit" class="reveal">
+        <div class="section-title">
+            <small>// CIRCUIT</small>
+            <h2>How you reach this page.</h2>
+        </div>
+
+        <div class="card">
+            <div class="circuit-head">
+                <p>Simulated path of an onion-service connection: six hops, with a rendezvous point in the middle. Relay names are random and generated in your browser.</p>
+                <button class="btn" id="reroll" type="button">NEW CIRCUIT</button>
+            </div>
+            <div class="circuit" id="circuit-hops" aria-live="off"></div>
+        </div>
+    </section>
+
+    <section id="status" class="reveal">
         <div class="section-title">
             <small>// STATUS</small>
             <h2>System information.</h2>
         </div>
 
+        <div class="stats">
+            <div class="stat"><small>SESSION</small><b id="st-session">00:00</b></div>
+            <div class="stat"><small>PROTOCOL</small><b id="st-proto">--</b></div>
+            <div class="stat"><small>CONNECTION</small><b id="st-conn">--</b></div>
+            <div class="stat"><small>VIEWPORT</small><b id="st-view">--</b></div>
+        </div>
+
         <div class="terminal">
-            <div class="terminal-head">
-                <i></i>
-                <i></i>
-                <i></i>
+            <div class="terminal-head"><i></i><i></i><i></i></div>
+            <div id="term-out" role="log" aria-live="polite"></div>
+            <div class="term-in">
+                <label for="term-input">visitor@onion:~$</label>
+                <input id="term-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" disabled placeholder="type 'help'">
             </div>
+        </div>
+    </section>
 
-            <pre><span class="green">$</span> system.status
-
-
-<span class="purple">SERVICE</span> onion-site
-<span class="purple">STATUS</span> online
-<span class="purple">MODE</span> private
-<span class="purple">NETWORK</span> Tor-compatible
-<span class="purple">UPTIME</span> 99.98%
-
-<span class="green">[ OK ]</span> system operational</pre>
-</div>
-</section>
-
-    <section id="access">
+    <section id="access" class="reveal">
         <div class="section-title">
             <small>// ACCESS</small>
             <h2>Connect securely.</h2>
@@ -420,20 +415,368 @@
 
         <div class="card">
             <p style="margin-bottom: 18px;">
-                This interface can be used as the public landing page
-                for a legitimate privacy-oriented project.
+                Open this address in Tor Browser. Bookmark it: there is no search engine that will find it again for you.
             </p>
 
-            <code style="color: var(--green);">
-                your-onion-address.onion
-            </code>
+            <div class="addr">
+                <code id="onion-addr">your-onion-address.onion</code>
+                <button class="btn" id="copy" type="button">COPY</button>
+            </div>
         </div>
     </section>
 
 </main>
 
 <footer>
-    ONION // PRIVATE NODE — 2026
+    ONION // PRIVATE NODE — <span id="year">2026</span>
 </footer>
 
-</body> </html>
+<script>
+(() => {
+    'use strict';
+
+    const $ = (s) => document.querySelector(s);
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const pad = (n) => String(n).padStart(2, '0');
+    const t0 = Date.now();
+
+    /* ---------- helpers ---------- */
+    const rand = (n) => Math.floor(Math.random() * n);
+    const pick = (a) => a[rand(a.length)];
+    const hex = (n) => Array.from({ length: n }, () => rand(16).toString(16)).join('');
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+    function fmtDuration(s) {
+        const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+        return h ? `${h}:${pad(m)}:${pad(sec)}` : `${pad(m)}:${pad(sec)}`;
+    }
+
+    /* ---------- year, address ---------- */
+    $('#year').textContent = new Date().getFullYear();
+
+    const host = location.hostname;
+    const isOnion = host.endsWith('.onion');
+    if (isOnion) $('#onion-addr').textContent = host;
+
+    /* ---------- clock + session ---------- */
+    function tick() {
+        const d = new Date();
+        $('#clock').textContent = `${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())} UTC`;
+        $('#st-session').textContent = fmtDuration(Math.floor((Date.now() - t0) / 1000));
+    }
+    tick();
+    setInterval(tick, 1000);
+
+    /* ---------- stats ---------- */
+    function updateStats() {
+        $('#st-proto').textContent = location.protocol.replace(':', '').toUpperCase();
+        $('#st-conn').textContent = isOnion ? 'ONION' : 'CLEARNET';
+        $('#st-view').textContent = `${innerWidth}×${innerHeight}`;
+    }
+    updateStats();
+    addEventListener('resize', updateStats);
+
+    /* ---------- typewriter ---------- */
+    const phrases = [
+        'A minimal private space built around privacy, anonymity and decentralized communication.',
+        'No public IP. No DNS. No trackers.',
+        'Served by Nginx. Hidden by Tor.',
+        'Your request travels through three relays before it gets here.'
+    ];
+    const typedEl = $('#typed');
+
+    async function typeLoop() {
+        let i = 0;
+        for (;;) {
+            const text = phrases[i % phrases.length];
+            for (let c = 1; c <= text.length; c++) {
+                typedEl.textContent = text.slice(0, c);
+                await sleep(28);
+            }
+            await sleep(2400);
+            for (let c = text.length; c >= 0; c--) {
+                typedEl.textContent = text.slice(0, c);
+                await sleep(10);
+            }
+            await sleep(300);
+            i++;
+        }
+    }
+    if (reduceMotion) typedEl.textContent = phrases[0];
+    else typeLoop();
+
+    /* ---------- onion easter egg ---------- */
+    const onion = $('#onion');
+    let clicks = 0;
+    onion.addEventListener('click', () => {
+        onion.classList.add('spin');
+        setTimeout(() => onion.classList.remove('spin'), 450);
+        if (++clicks === 5) {
+            clicks = 0;
+            document.documentElement.style.setProperty('--purple', pick(['#9b5cff', '#ff5c8a', '#5cb8ff', '#ffb347', '#55e6a5']));
+        }
+    });
+
+    /* ---------- scroll reveal + nav highlight ---------- */
+    const revealObs = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+            if (e.isIntersecting) {
+                e.target.classList.add('in');
+                revealObs.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach((el) => revealObs.observe(el));
+
+    const links = [...document.querySelectorAll('nav ul a')];
+    const navObs = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+            if (e.isIntersecting) {
+                links.forEach((a) => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+            }
+        });
+    }, { rootMargin: '-40% 0px -50% 0px' });
+    document.querySelectorAll('main section[id]').forEach((s) => navObs.observe(s));
+
+    /* ---------- simulated circuit ---------- */
+    const countries = ['DE', 'NL', 'SE', 'CH', 'FR', 'IS', 'FI', 'CA', 'US', 'RO', 'AT', 'NO'];
+    const prefixes = ['onion', 'shade', 'veil', 'echo', 'drift', 'lumen', 'ember', 'quill', 'moss', 'tarn'];
+    const hopsBox = $('#circuit-hops');
+    let hopEls = [];
+    let step = 0;
+
+    function buildCircuit() {
+        const roles = [
+            ['YOU', 'Tor Browser', 'local'],
+            ['GUARD', null, null],
+            ['MIDDLE', null, null],
+            ['RENDEZVOUS', null, null],
+            ['MIDDLE', null, null],
+            ['THIS NODE', 'tor-nginx', isOnion ? 'hidden' : 'hidden service']
+        ];
+        hopsBox.textContent = '';
+        hopEls = roles.map(([role, name, loc]) => {
+            const el = document.createElement('div');
+            el.className = 'hop';
+            const s = document.createElement('small');
+            const b = document.createElement('b');
+            const sp = document.createElement('span');
+            s.textContent = role;
+            b.textContent = name || `${pick(prefixes)}${rand(900) + 100}`;
+            sp.textContent = loc || `${pick(countries)} · ${hex(4)}`;
+            el.append(s, b, sp);
+            hopsBox.appendChild(el);
+            return el;
+        });
+        step = 0;
+    }
+    buildCircuit();
+    $('#reroll').addEventListener('click', buildCircuit);
+
+    if (!reduceMotion) {
+        setInterval(() => {
+            if (document.hidden) return;
+            hopEls.forEach((el, i) => el.classList.toggle('active', i === step));
+            step = (step + 1) % hopEls.length;
+        }, 650);
+    }
+
+    /* ---------- interactive terminal ---------- */
+    const out = $('#term-out');
+    const input = $('#term-input');
+    const history = [];
+    let hIdx = 0;
+
+    function print(text, cls) {
+        const line = document.createElement('div');
+        if (cls) line.className = cls;
+        line.textContent = text;
+        out.appendChild(line);
+        out.scrollTop = out.scrollHeight;
+    }
+
+    const commands = {
+        help() {
+            return [
+                'available commands:',
+                '  help      show this list',
+                '  status    service summary',
+                '  circuit   generate a new simulated circuit',
+                '  whoami    what this page can see about you',
+                '  uptime    time since you opened the page',
+                '  date      current UTC time',
+                '  about     what this node is',
+                '  theme     cycle accent color',
+                '  clear     clear the screen'
+            ];
+        },
+        status() {
+            return [
+                'service   onion-site',
+                'web       nginx, static, port 80 (internal)',
+                'ssh       key-only, port 4242',
+                'network   ' + (isOnion ? 'onion service (you are on Tor)' : 'clearnet (open via the .onion address for the real path)')
+            ];
+        },
+        circuit() {
+            buildCircuit();
+            location.hash = '#circuit';
+            return ['new circuit built: ' + hopEls.map((h) => h.querySelector('b').textContent).join(' > ')];
+        },
+        whoami() {
+            return [
+                'visitor',
+                'language  ' + (navigator.language || 'unknown'),
+                'viewport  ' + innerWidth + 'x' + innerHeight,
+                'The server logs nothing from this page: it is static.'
+            ];
+        },
+        uptime() { return ['session ' + fmtDuration(Math.floor((Date.now() - t0) / 1000))]; },
+        date() { return [new Date().toUTCString()]; },
+        about() {
+            return [
+                'A static page served by Nginx and published as a Tor hidden service.',
+                'All interactivity runs in your browser; nothing is sent anywhere.'
+            ];
+        },
+        theme() {
+            const c = pick(['#9b5cff', '#ff5c8a', '#5cb8ff', '#ffb347']);
+            document.documentElement.style.setProperty('--purple', c);
+            return ['accent set to ' + c];
+        },
+        clear() { out.textContent = ''; return []; }
+    };
+
+    function run(raw) {
+        const cmd = raw.trim().toLowerCase();
+        print('visitor@onion:~$ ' + raw, 'green');
+        if (!cmd) return;
+        history.push(raw);
+        hIdx = history.length;
+        if (commands[cmd]) {
+            commands[cmd]().forEach((l) => print(l));
+        } else {
+            print(`command not found: ${cmd}. Type 'help'.`, 'amber');
+        }
+    }
+
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            run(input.value);
+            input.value = '';
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (hIdx > 0) input.value = history[--hIdx];
+        } else if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            input.value = hIdx < history.length - 1 ? history[++hIdx] : (hIdx = history.length, '');
+        }
+    });
+    $('.terminal').addEventListener('click', () => { if (!input.disabled) input.focus({ preventScroll: true }); });
+
+    const bootLines = [
+        ['[ .. ] reading torrc', ''],
+        ['[ OK ] hidden service directory ready', 'green'],
+        ['[ OK ] nginx listening on 127.0.0.1:80', 'green'],
+        ['[ OK ] sshd: key-only authentication', 'green'],
+        ['[ OK ] rendezvous circuit established', 'green'],
+        ["type 'help' to list commands.", 'purple']
+    ];
+
+    let booted = false;
+    async function boot() {
+        if (booted) return;
+        booted = true;
+        for (const [text, cls] of bootLines) {
+            print(text, cls);
+            if (!reduceMotion) await sleep(380);
+        }
+        input.disabled = false;
+    }
+    new IntersectionObserver((entries, obs) => {
+        if (entries[0].isIntersecting) { boot(); obs.disconnect(); }
+    }, { threshold: 0.3 }).observe($('.terminal'));
+
+    /* ---------- copy address ---------- */
+    $('#copy').addEventListener('click', async (e) => {
+        const btn = e.currentTarget;
+        const text = $('#onion-addr').textContent;
+        let ok = false;
+        try {
+            await navigator.clipboard.writeText(text);
+            ok = true;
+        } catch (_) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            try { ok = document.execCommand('copy'); } catch (__) { /* ignore */ }
+            ta.remove();
+        }
+        btn.textContent = ok ? 'COPIED' : 'SELECT MANUALLY';
+        setTimeout(() => { btn.textContent = 'COPY'; }, 1500);
+    });
+
+    /* ---------- background network ---------- */
+    if (!reduceMotion) {
+        const cv = $('#net');
+        const ctx = cv.getContext('2d');
+        let w = 0, h = 0, nodes = [];
+        const LINK = 140;
+
+        function resize() {
+            const dpr = Math.min(devicePixelRatio || 1, 2);
+            w = innerWidth; h = innerHeight;
+            cv.width = w * dpr; cv.height = h * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            const count = Math.min(60, Math.floor((w * h) / 26000));
+            nodes = Array.from({ length: count }, () => ({
+                x: Math.random() * w, y: Math.random() * h,
+                vx: (Math.random() - .5) * .25, vy: (Math.random() - .5) * .25
+            }));
+        }
+        resize();
+        addEventListener('resize', resize);
+
+        function frame() {
+            if (!document.hidden) {
+                ctx.clearRect(0, 0, w, h);
+                const accent = getComputedStyle(document.documentElement).getPropertyValue('--purple').trim() || '#9b5cff';
+                ctx.fillStyle = accent;
+                ctx.strokeStyle = accent;
+                for (const n of nodes) {
+                    n.x += n.vx; n.y += n.vy;
+                    if (n.x < 0 || n.x > w) n.vx *= -1;
+                    if (n.y < 0 || n.y > h) n.vy *= -1;
+                }
+                for (let i = 0; i < nodes.length; i++) {
+                    const a = nodes[i];
+                    ctx.globalAlpha = .35;
+                    ctx.beginPath();
+                    ctx.arc(a.x, a.y, 1.6, 0, 6.283);
+                    ctx.fill();
+                    for (let j = i + 1; j < nodes.length; j++) {
+                        const b = nodes[j];
+                        const d = Math.hypot(a.x - b.x, a.y - b.y);
+                        if (d < LINK) {
+                            ctx.globalAlpha = (1 - d / LINK) * .18;
+                            ctx.beginPath();
+                            ctx.moveTo(a.x, a.y);
+                            ctx.lineTo(b.x, b.y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+                ctx.globalAlpha = 1;
+            }
+            requestAnimationFrame(frame);
+        }
+        frame();
+    }
+})();
+</script>
+
+</body>
+</html>

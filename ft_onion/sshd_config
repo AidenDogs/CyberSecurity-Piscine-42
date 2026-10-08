@@ -3,12 +3,29 @@ ListenAddress 0.0.0.0
 
 PermitRootLogin no
 PasswordAuthentication no
+KbdInteractiveAuthentication no
 PubkeyAuthentication yes
-
 UsePAM no
 
 X11Forwarding no
 AllowTcpForwarding no
 PermitTunnel no
 
+AllowUsers student
+LogLevel VERBOSE
+
 Subsystem sftp /usr/lib/openssh/sftp-server
+
+MaxAuthTries 3
+LoginGraceTime 20
+ClientAliveInterval 300
+ClientAliveCountMax 2
+AllowAgentForwarding no
+PermitEmptyPasswords no
+PermitUserEnvironment no
+MaxSessions 2
+HostKey /etc/ssh/hostkeys/ssh_host_ed25519_key
+PubkeyAcceptedAlgorithms ssh-ed25519
+KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org
+Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com
+MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com
