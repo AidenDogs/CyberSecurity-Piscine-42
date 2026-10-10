@@ -1,8 +1,8 @@
 
 NAME = ft_otp
 
-SRC = 	main.cpp \
-		src/*.cpp
+SRC = 	cli/main.cpp \
+		cli/src/*.cpp
 
 CC = c++
 
@@ -11,9 +11,13 @@ all: $(NAME)
 $(NAME): $(SRC)
 	$(CC) $^ -o $(NAME) -lcrypto
 
-bonus: $(NAME)
+bonus:
 	@echo "Starting ft_otp bonus server..."
-	cd bonus && pnpm run dev	
+	cd web && pnpm run dev
+
+both: $(NAME)
+	@echo "Starting ft_otp bonus server..."
+	cd web && pnpm run dev
 
 fclean:
 	rm -rf $(NAME)
