@@ -5,11 +5,13 @@
 void no(void)
 {
 	printf("Nope.\n");
+	exit();
 }
 
 void ok(void)
 {
 	printf("Good job.\n");
+	exit();
 }
 
 int main(void)
@@ -39,7 +41,8 @@ int main(void)
 	memset(result, 0, 9);
 	result[0] = 'd';
 
-	while (strlen(result) < 8 && i < strlen(input)) {
+	while (strlen(result) < 8 && i < strlen(input))
+	{
 		char digits[4];
 
 		digits[0] = input[i];
