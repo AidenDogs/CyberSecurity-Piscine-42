@@ -1,7 +1,7 @@
-
 NAME = stockholm
 
-SRC = main.cpp
+SRC = 	main.cpp \
+		src/*.cpp
 
 CC = c++
 
