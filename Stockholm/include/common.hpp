@@ -14,6 +14,10 @@
 # include <iterator>
 # include <openssl/evp.h>
 # include <openssl/rand.h>
+# include <utility>
+# include <thread>
+# include <algorithm>
+# include <cmath>
 
 const std::string PROGRAM_VERSION = "1.0";
 const std::string INFECTION_DIR = (std::string(std::getenv("HOME")) + "/infection/");
