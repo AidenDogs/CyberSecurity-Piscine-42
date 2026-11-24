@@ -20,6 +20,10 @@ COPY sshd_config /etc/ssh/sshd_config
 COPY torrc /etc/tor/torrc
 COPY entrypoint.sh /entrypoint.sh
 
+RUN chmod 755 /usr/share/nginx && \
+    chmod 755 /usr/share/nginx/html && \
+    chmod 644 /usr/share/nginx/html/index.html
+
 RUN chmod +x /entrypoint.sh && \
     chmod 600 /etc/ssh/sshd_config && \
     chown debian-tor:debian-tor /etc/tor/torrc && \
