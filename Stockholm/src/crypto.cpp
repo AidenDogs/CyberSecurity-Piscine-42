@@ -186,3 +186,139 @@ void decryptFile(const std::string& inputFile, const std::string& outputFile, co
 
 	writeFile(outputFile, plaintext);
 }
+
+std::array<unsigned char, AES_KEY_LEN> generateEncryptionKey()
+{
+	std::array<unsigned char, AES_KEY_LEN> key{};
+
+	if (RAND_bytes(key.data(), key.size()) != 1)
+		throw std::runtime_error("Failed to generate AES key");
+
+	return (key);
+}
+
+std::string decryptRSA(const std::vector<unsigned char>& encrypted, const std::string& privateKeyPath)
+{
+	FILE* file = fopen(privateKeyPath.c_str(), "r");
+
+	if (!file)
+		throw std::runtime_error("Cannot open private key");
+
+	EVP_PKEY* key = PEM_read_PrivateKey(file, nullptr, nullptr, nullptr);
+
+	fclose(file);
+
+	if (!key)
+		throw std::runtime_error("Cannot read private key");
+
+	EVP_PKEY_CTX* ctx = EVP_PKEY_CTX_new(key, nullptr);
+
+	if (!ctx)
+	{
+		EVP_PKEY_free(key);
+		throw std::runtime_error("Cannot create context");
+	}
+
+	try
+	{
+		if (EVP_PKEY_decrypt_init(ctx) <= 0)
+			throw std::runtime_error("Decryption init failed");
+
+		if (EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_OAEP_PADDING) <= 0)
+			throw std::runtime_error("Padding setup failed");
+
+		if (EVP_PKEY_CTX_set_rsa_oaep_md(ctx, EVP_sha256()) <= 0)
+			throw std::runtime_error("OAEP hash setup failed");
+
+		if (EVP_PKEY_CTX_set_rsa_mgf1_md(ctx, EVP_sha256()) <= 0)
+			throw std::runtime_error("MGF1 hash setup failed");
+
+		size_t outputSize = 0;
+
+		if (EVP_PKEY_decrypt(
+				ctx, nullptr, &outputSize,
+				encrypted.data(), encrypted.size()) <= 0)
+			throw std::runtime_error("Decryption failed");
+
+		std::vector<unsigned char> decrypted(outputSize);
+
+		if (EVP_PKEY_decrypt(
+				ctx, decrypted.data(), &outputSize,
+				encrypted.data(), encrypted.size()) <= 0)
+			throw std::runtime_error("Decryption failed");
+
+		std::string result(decrypted.begin(), decrypted.begin() + outputSize);
+
+		EVP_PKEY_CTX_free(ctx);
+		EVP_PKEY_free(key);
+
+		return result;
+	}
+	catch (...)
+	{
+		EVP_PKEY_CTX_free(ctx);
+		EVP_PKEY_free(key);
+		throw;
+	}
+}
+
+std::vector<unsigned char> encryptRSA(const std::string& message, const std::string& publicKeyPath)
+{
+	FILE* file = fopen(publicKeyPath.c_str(), "r");
+	if (!file)
+		throw std::runtime_error("Cannot open public key");
+
+	EVP_PKEY* key = PEM_read_PUBKEY(file, nullptr, nullptr, nullptr);
+	fclose(file);
+
+	if (!key)
+		throw std::runtime_error("Cannot read public key");
+
+	EVP_PKEY_CTX* ctx = EVP_PKEY_CTX_new(key, nullptr);
+
+	std::vector<unsigned char> encrypted;
+
+	try
+	{
+		if (EVP_PKEY_encrypt_init(ctx) <= 0)
+			throw std::runtime_error("Encryption init failed");
+
+		if (EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_OAEP_PADDING) <= 0)
+			throw std::runtime_error("Padding setup failed");
+
+		if (EVP_PKEY_CTX_set_rsa_oaep_md(ctx, EVP_sha256()) <= 0)
+			throw std::runtime_error("OAEP hash setup failed");
+
+		if (EVP_PKEY_CTX_set_rsa_mgf1_md(ctx, EVP_sha256()) <= 0)
+			throw std::runtime_error("MGF1 hash setup failed");
+
+		size_t outputSize = 0;
+
+		if (EVP_PKEY_encrypt(
+				ctx, nullptr, &outputSize,
+				reinterpret_cast<const unsigned char*>(message.data()),
+				message.size()) <= 0)
+			throw std::runtime_error("Size calculation failed");
+
+		encrypted.resize(outputSize);
+
+		if (EVP_PKEY_encrypt(
+				ctx, encrypted.data(), &outputSize,
+				reinterpret_cast<const unsigned char*>(message.data()),
+				message.size()) <= 0)
+			throw std::runtime_error("Encryption failed");
+
+		encrypted.resize(outputSize);
+	}
+	catch (...)
+	{
+		EVP_PKEY_CTX_free(ctx);
+		EVP_PKEY_free(key);
+		throw;
+	}
+
+	EVP_PKEY_CTX_free(ctx);
+	EVP_PKEY_free(key);
+
+	return encrypted;
+}

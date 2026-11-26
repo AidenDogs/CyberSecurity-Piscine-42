@@ -24,11 +24,6 @@ static void parseArgs(int argc, char **argv)
 			}
 
 			key = argv[i + 1];
-			if (key.length() < 16)
-			{
-				std::cerr << "Key has to be at least 16 characters long" << std::endl;
-				exit(1);
-			}
 		}
 	}
 	if (!key.empty()) 
