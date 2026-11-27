@@ -3,7 +3,7 @@ NAME = ironDome
 SRC = 	main.c \
 		src/*.c
 
-CC = c++
+CC = cc -Wall -Wextra -Werror
 
 all: $(NAME)
 

@@ -1,40 +1,44 @@
-#include <unistd.h>
-#include <string.h>
-#include <stdio.h>
+#include "include/common.h"
+#include "include/print.h"
 
-void printError(char *error)
+void start(char **argv)
 {
-	write(2, &error, strlen(error));
+	//char **toProtect;
+	(void)argv;
+
 }
 
-void writeLog(char *string)
-{
-	const char *filename = "/var/log/irondome/irondome.log";
-
-	FILE *fp = fopen(filename, "w");
-
-	if (fp == NULL)
-	{
-		perror("Error creating file");
-		exit(1);
-	}
-
-	fprintf(fp, string);
-	fclose(fp);
-}
-
-int main (int argc, char **argv)
+static void checkArgError(int argc)
 {
 	if (argc < 2)
 	{
 		printError("Invalid number of argument\n");
 		//displayUsage();
-		return (1);
+		exit(1);
+	}
+
+	struct utsname sysInfo;
+	if (uname(&sysInfo) == -1)
+	{
+		printError("Failed to retrieve system information\n");
+		exit(1);
+	}
+
+	if (strcmp(sysInfo.sysname, "Linux") != 0)
+	{
+		printError("This program must be run on Linux platform\n");
+		exit(1);
 	}
 
 	if (geteuid() != 0)
 	{
 		printError("The program must be run as root\n");
-		return (1);
+		exit(1);
 	}
+}
+
+int main (int argc, char **argv)
+{
+	checkArgError(argc);
+	start(argv);
 }
